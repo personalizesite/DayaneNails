@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Área da Dayane | Dayane Nails</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Montserrat:wght@400;500;600&display=swap');
+:root{--m:#741f2b;--md:#4d121b;--bg:#fbf8f5;--ink:#24191b;--muted:#796d6f;--line:#eadedf}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:Montserrat,Arial,sans-serif}
+.wrap{max-width:900px;margin:auto;padding:32px 18px 60px} .back{display:inline-block;color:var(--m);text-decoration:none;font-size:12px;margin-bottom:24px}
+.brand{font:600 44px/1 'Cormorant Garamond',serif;color:var(--m)} .box{background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px;margin-top:22px;box-shadow:0 8px 30px rgba(50,20,25,.04)}
+.eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--m)} h1{font:500 44px/1.05 'Cormorant Garamond',serif;color:var(--m);margin:8px 0 12px}
+h2{font:500 25px 'Cormorant Garamond',serif;color:var(--m);margin:0} p{color:var(--muted);line-height:1.7}
+input{width:100%;max-width:430px;padding:15px;border:1px solid var(--line);border-radius:12px;font:14px Montserrat;background:#fff}
+button{border:0;border-radius:100px;background:var(--m);color:#fff;padding:13px 20px;font:600 11px Montserrat;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+button:hover{background:var(--md)} button:disabled{opacity:.45;cursor:not-allowed} .loginbtn{margin-top:12px}
+.outline{background:#fff;color:var(--m);border:1px solid var(--m)} .top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+.actions{display:flex;gap:8px;flex-wrap:wrap} .count{font-size:12px;color:var(--muted);margin:12px 0 20px}
+.calendar-box{margin:22px 0;border:1px solid var(--line);border-radius:18px;padding:16px;background:#fff}
+.calendar-head{display:flex;align-items:center;justify-content:space-between;gap:10px} .month-btn{width:42px;height:42px;margin:0;padding:0;font-size:24px}
+.weekdays,.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:7px} .weekdays{margin:18px 0 7px;color:var(--muted);font-size:10px;text-align:center}
+.calendar-day{min-height:54px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:11px;padding:6px;cursor:pointer;text-align:left;text-transform:none;letter-spacing:0}
+.calendar-day:hover{border-color:var(--m);background:#fff} .calendar-day .num{font-size:13px}
+.calendar-day.has-booking{background:#fff4f4;border-color:#d9aeb4} .calendar-day.has-block{background:#f1eeee;border-color:#aaa}
+.calendar-day.closed{background:#f2f0ef;color:#999;cursor:not-allowed} .calendar-day.selected{outline:2px solid var(--m);outline-offset:1px}
+.calendar-day .dot{display:block;width:6px;height:6px;border-radius:50%;background:#8b1e2d;margin-top:5px}
+.calendar-day .block-dot{display:block;font-size:8px;margin-top:4px;color:#777} .day-agenda{margin-top:16px;border-top:1px solid var(--line);padding-top:15px}
+.day-title{font:500 23px Georgia,serif;color:var(--m);margin:0 0 12px} .day-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.slot{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:13px;padding:12px 14px;margin:8px 0}
+.slot .time{font-weight:600;min-width:58px} .slot.available{background:#fafdf9} .slot.busy{background:#fff4f4;border-color:#e3c1c5}
+.slot.closed-slot,.slot.blocked{background:#f2f0ef;color:#777} .slot-info{font-size:12px;text-align:right;color:var(--muted)}
+.slot-status{font-size:11px;font-weight:600} .status-ok{color:#31724a} .status-busy{color:#8b1e2d} .status-closed{color:#777}
+.card{border:1px solid var(--line);border-radius:18px;padding:20px;margin:12px 0;background:#fff} .date{font-size:13px;font-weight:600;color:var(--m)}
+.name{font:600 25px 'Cormorant Garamond',serif;margin:5px 0} .details{font-size:13px;color:var(--muted);line-height:1.9}
+.cancel{margin-top:14px;background:#fff;color:#8b1e2d;border:1px solid #d9aeb4;font-size:10px;padding:10px 14px}
+.error{color:#8b1e2d;font-size:13px;margin-top:12px} .empty{padding:20px 0} .notice{font-size:12px;margin-top:10px}
+@media(max-width:600px){.weekdays,.calendar{gap:4px}.calendar-day{min-height:48px;padding:5px}.slot{padding:10px}}
+</style>
+
+<style>
+/* Melhorias visuais do painel Dayane Nails */
+:root{
+  --dn-bg:#faf7f4;
+  --dn-card:#ffffff;
+  --dn-text:#2d2523;
+  --dn-muted:#817773;
+  --dn-accent:#8b4d5b;
+  --dn-accent-dark:#6f3c48;
+  --dn-border:#eadfda;
+  --dn-free:#eaf5ed;
+  --dn-free-text:#287344;
+  --dn-busy:#fbeaec;
+  --dn-busy-text:#9b3448;
+  --dn-closed:#f1eeee;
+}
+body{
+  background:var(--dn-bg)!important;
+  color:var(--dn-text)!important;
+}
+h1,h2,h3{
+  letter-spacing:-.02em;
+}
+button{
+  border-radius:12px!important;
+  transition:.18s ease;
+}
+button:hover{
+  transform:translateY(-1px);
+}
+input,select{
+  border:1px solid var(--dn-border)!important;
+  border-radius:11px!important;
+  background:#fff!important;
+}
+.dn-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:12px 0 18px;
+}
+.dn-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 11px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  border:1px solid var(--dn-border);
+  background:#fff;
+}
+.dn-pill.free{background:var(--dn-free);color:var(--dn-free-text)}
+.dn-pill.busy{background:var(--dn-busy);color:var(--dn-busy-text)}
+.dn-pill.closed{background:var(--dn-closed);color:#6f6664}
+.dn-day-card{
+  border:1px solid var(--dn-border);
+  border-radius:16px;
+  background:var(--dn-card);
+  padding:16px;
+  box-shadow:0 5px 20px rgba(70,45,35,.05);
+}
+.dn-section-title{
+  margin:0 0 6px;
+  font-size:18px;
+}
+.dn-section-sub{
+  margin:0 0 14px;
+  color:var(--dn-muted);
+  font-size:13px;
+}
+.dn-summary{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin:14px 0;
+}
+.dn-stat{
+  background:#fff;
+  border:1px solid var(--dn-border);
+  border-radius:14px;
+  padding:13px;
+}
+.dn-stat b{display:block;font-size:22px;margin-top:3px}
+.dn-stat span{font-size:11px;color:var(--dn-muted);text-transform:uppercase;letter-spacing:.05em}
+.dn-action-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:12px;
+}
+@media(max-width:600px){
+  .dn-summary{grid-template-columns:1fr 1fr}
+  .dn-stat:last-child{grid-column:1/-1}
+}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="index.html">← Voltar ao site</a>
+<div class="brand">Dayane Nails</div>
+
+<section class="box" id="login">
+<div class="eyebrow">Área exclusiva</div><h1>Agendamentos</h1>
+<p>Entre para consultar e gerir os horários das clientes.</p>
+<input id="password" type="password" placeholder="Senha da Dayane">
+<br><button class="loginbtn" id="enter">Entrar</button>
+<div id="error" class="error" style="display:none">Senha incorreta.</div>
+</section>
+
+<section class="box" id="panel" style="display:none">
+<div class="top">
+<div><div class="eyebrow">Área da Dayane</div><h1>Minha agenda</h1></div>
+<div class="actions"><button id="refresh">Atualizar</button><button id="logout" class="outline">Sair</button></div>
+</div>
+<div id="count" class="count"></div>
+
+<div class="calendar-box">
+<div class="calendar-head">
+<button id="prevMonth" class="month-btn">‹</button><h2 id="monthTitle"></h2><button id="nextMonth" class="month-btn">›</button>
+</div>
+<div class="weekdays"><span>DOM</span><span>SEG</span><span>TER</span><span>QUA</span><span>QUI</span><span>SEX</span><span>SÁB</span></div>
+
+<div class="dn-day-card" style="margin-bottom:14px;">
+  <h3 class="dn-section-title">Agenda da Dayane</h3>
+  <p class="dn-section-sub">Veja rapidamente os horários livres, ocupados e os dias fechados.</p>
+  <div class="dn-legend">
+    <span class="dn-pill free">● Disponível</span>
+    <span class="dn-pill busy">● Indisponível</span>
+    <span class="dn-pill closed">● Domingo / Fechado</span>
+  </div>
+</div>
+
+<div id="calendar" class="calendar"></div>
+<div style="margin:10px 0 16px;padding:11px 13px;border-radius:12px;background:#fff;border:1px solid #eadfda;color:#6f6561;font-size:13px;">💡 <b>Dica:</b> selecione um dia no calendário para ver os 4 horários. Você pode bloquear o dia inteiro quando não houver atendimento.</div>
+<div id="dayAgenda" class="day-agenda"><p>Selecione um dia para ver os horários.</p></div>
+</div>
+
+<div id="list"></div>
+</section>
+</div>
+
+<script>
+const SUPABASE_URL='https://iywrgssheqizpumsktnb.supabase.co';
+const SUPABASE_KEY='sb_publishable_qBBxtcypQlIVzI68RXWEkw_rEhcYitQ';
+const ADMIN_PASSWORD='dayane123';
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const TIMES=['09:15','11:15','13:15','15:15'];
+
+const login=document.getElementById('login'), panel=document.getElementById('panel');
+const password=document.getElementById('password'), error=document.getElementById('error');
+const list=document.getElementById('list'), count=document.getElementById('count');
+
+let currentMonth=new Date(); currentMonth.setDate(1);
+let selectedDate=null, rows=[];
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function isoDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function dateBR(v){const [y,m,d]=String(v).slice(0,10).split('-');return `${d}/${m}/${y}`;}
+function isSunday(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).getDay()===0;}
+function monthLabel(d){return d.toLocaleDateString('pt-PT',{month:'long',year:'numeric'});}
+function latestBySlot(date) {
+  const map={};
+  rows.filter(r=>String(r.Data).slice(0,10)===date).forEach(r=>{
+    const t=String(r.Horario||'').slice(0,5);
+    if(!TIMES.includes(t)) return;
+    const old=map[t];
+    if(!old || String(r.created_at||'') > String(old.created_at||'')) map[t]=r;
+  });
+  return map;
+}
+function dateBlocked(date) {
+  if(isSunday(date)) return true;
+  const map=latestBySlot(date);
+  return TIMES.every(t=>map[t] && String(map[t].Status).toLowerCase()==='bloqueado');
+}
+function confirmedForDate(date) {
+  return rows.filter(r=>String(r.Data).slice(0,10)===date && String(r.Status||'').toLowerCase()==='confirmado');
+}
+
+function renderCalendar() {
+  const cal=document.getElementById('calendar'); cal.innerHTML='';
+  document.getElementById('monthTitle').textContent=monthLabel(currentMonth);
+  const y=currentMonth.getFullYear(), m=currentMonth.getMonth();
+  const offset=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
+  for(let i=0;i<offset;i++) cal.appendChild(document.createElement('div'));
+  for(let n=1;n<=days;n++) {
+    const d=new Date(y,m,n), iso=isoDate(d), el=document.createElement('button');
+    el.type='button'; el.className='calendar-day';
+    const sunday=d.getDay()===0, bookings=confirmedForDate(iso), blocked=!sunday && dateBlocked(iso);
+    if(bookings.length) el.classList.add('has-booking');
+    if(blocked) el.classList.add('has-block');
+    if(selectedDate===iso) el.classList.add('selected');
+    if(sunday) {
+      el.classList.add('closed');
+      el.innerHTML=`<span class="num">${n}</span><span class="closed-label">Fechado</span>`;
+    } else {
+      el.innerHTML=`<span class="num">${n}</span>${bookings.length?'<span class="dot"></span>':''}${blocked?'<span class="block-dot">Bloqueado</span>':''}`;
+      el.addEventListener('click',()=>selectDate(iso));
+    }
+    cal.appendChild(el);
+  }
+}
+
+function renderDayAgenda() {
+  const box=document.getElementById('dayAgenda');
+  if(!selectedDate) {box.innerHTML='<p>Selecione um dia para ver os horários.</p>';return;}
+  if(isSunday(selectedDate)) {
+    box.innerHTML=`<h3 class="day-title">${dateBR(selectedDate)}</h3><div class="slot closed-slot"><span>Domingo</span><span class="slot-status status-closed">FECHADO</span></div>`;
+    return;
+  }
+  const map=latestBySlot(selectedDate), bookings=confirmedForDate(selectedDate);
+  const fullyBlocked=TIMES.every(t=>map[t] && String(map[t].Status).toLowerCase()==='bloqueado');
+  let action=fullyBlocked
+    ? '<button id="unblockDay" class="outline">Desbloquear este dia</button>'
+    : '<button id="blockDay">Bloquear este dia</button>';
+  if(bookings.length) action='<button disabled title="Não é possível bloquear um dia com cliente marcada">Bloquear este dia</button>';
+  const html=TIMES.map(t=>{
+    const r=map[t], status=String(r?.Status||'').toLowerCase();
+    if(status==='bloqueado') return `<div class="slot blocked"><span class="time">${t}</span><span class="slot-info"><span class="slot-status status-closed">INDISPONÍVEL</span><br>Bloqueado pela Dayane</span></div>`;
+    if(status==='confirmado') return `<div class="slot busy"><span class="time">${t}</span><span class="slot-info"><strong>${esc(r.Nome)}</strong><br>${esc(r.Servico)}${r.Telemovel?` · ${esc(r.Telemovel)}`:''}<br><span class="slot-status status-busy">INDISPONÍVEL</span></span></div>`;
+    return `<div class="slot available"><span class="time">${t}</span><span class="slot-info"><span class="slot-status status-ok">DISPONÍVEL</span></span></div>`;
+  }).join('');
+  box.innerHTML=`<h3 class="day-title">${dateBR(selectedDate)}</h3><div class="day-actions">${action}</div>${html}`;
+  document.getElementById('blockDay')?.addEventListener('click',()=>bloquearDia(selectedDate));
+  document.getElementById('unblockDay')?.addEventListener('click',()=>desbloquearDia(selectedDate));
+}
+
+function selectDate(iso){selectedDate=iso;renderCalendar();renderDayAgenda();}
+
+async function carregarDados() {
+  const {data,error:err}=await db.from('Agendamentos')
+    .select('id,created_at,Nome,Telemovel,Servico,Data,Horario,Status')
+    .order('Data',{ascending:true}).order('Horario',{ascending:true}).order('created_at',{ascending:true});
+  if(err){console.error(err);alert('Não foi possível carregar a agenda.');return;}
+  rows=data||[];
+  const confirmed=rows.filter(r=>String(r.Status||'').toLowerCase()==='confirmado');
+  count.textContent=`${confirmed.length} agendamento(s) confirmado(s)`;
+  renderCalendar(); renderDayAgenda(); renderLista(confirmed);
+}
+
+function renderLista(data) {
+  if(!data.length){list.innerHTML='<p class="empty">Nenhum agendamento confirmado ainda.</p>';return;}
+  list.innerHTML=data.map(a=>`<article class="card" id="a-${a.id}">
+    <div class="date">📅 ${dateBR(a.Data)} &nbsp; • &nbsp; 🕐 ${esc(String(a.Horario||'').slice(0,5))}</div>
+    <div class="name">${esc(a.Nome||'Sem nome')}</div>
+    <div class="details">💅 ${esc(a.Servico||'-')}<br>📱 ${esc(a.Telemovel||'-')}</div>
+    <button class="cancel" data-id="${a.id}">Cancelar agendamento</button>
+  </article>`).join('');
+  document.querySelectorAll('.cancel').forEach(b=>b.addEventListener('click',()=>cancelar(b.dataset.id)));
+}
+
+async function cancelar(id) {
+  if(!confirm('Tem certeza que deseja cancelar este agendamento?')) return;
+  const {error:err}=await db.from('Agendamentos').update({Status:'cancelado'}).eq('id',id);
+  if(err){console.error(err);alert('Não foi possível cancelar. É preciso liberar UPDATE no Supabase.');return;}
+  alert('Agendamento cancelado. O horário voltou a ficar disponível.');
+  carregarDados();
+}
+
+async function bloquearDia(date) {
+  if(isSunday(date)) return;
+  if(confirmedForDate(date).length){alert('Esse dia já tem cliente marcada. Não é possível bloquear.');return;}
+  if(!confirm(`Bloquear o dia ${dateBR(date)}? Nenhuma cliente poderá marcar nesse dia.`)) return;
+  const payload=TIMES.map(t=>({Nome:'Dayane Nails',Telemovel:'',Servico:'Dia bloqueado',Data:date,Horario:t,Status:'bloqueado'}));
+  const {error:err}=await db.from('Agendamentos').insert(payload);
+  if(err){console.error(err);alert('Não foi possível bloquear o dia.');return;}
+  alert('Dia bloqueado.'); await carregarDados();
+}
+
+async function desbloquearDia(date) {
+  if(!confirm(`Desbloquear o dia ${dateBR(date)}?`)) return;
+  const payload=TIMES.map(t=>({Nome:'Dayane Nails',Telemovel:'',Servico:'Dia desbloqueado',Data:date,Horario:t,Status:'liberado'}));
+  const {error:err}=await db.from('Agendamentos').insert(payload);
+  if(err){console.error(err);alert('Não foi possível desbloquear o dia.');return;}
+  alert('Dia desbloqueado. Os horários voltaram a ficar disponíveis.'); await carregarDados();
+}
+
+document.getElementById('enter').onclick=()=>{
+  if(password.value===ADMIN_PASSWORD){login.style.display='none';panel.style.display='block';error.style.display='none';carregarDados();}
+  else error.style.display='block';
+};
+password.onkeydown=e=>{if(e.key==='Enter')document.getElementById('enter').click();};
+document.getElementById('refresh').onclick=carregarDados;
+document.getElementById('logout').onclick=()=>{panel.style.display='none';login.style.display='block';password.value='';};
+document.getElementById('prevMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderCalendar();renderDayAgenda();};
+document.getElementById('nextMonth').onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderCalendar();renderDayAgenda();};
+</script>
+</body>
+</html>
